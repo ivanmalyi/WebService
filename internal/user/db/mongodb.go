@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ivanmalyi/WebService/internal/apperror"
 	"github.com/ivanmalyi/WebService/internal/user"
 	"github.com/ivanmalyi/WebService/pkg/logging"
 	"go.mongodb.org/mongo-driver/bson"
@@ -50,7 +51,7 @@ func (d *db) FindOne(ctx context.Context, id string) (u user.User, err error) {
 
 	if result.Err() != nil {
 		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
-			return u, fmt.Errorf("ErrEntityNotFound")
+			return u, apperror.ErrNotFound
 		}
 		return u, fmt.Errorf("filed to find one user by id: %s due to error: %v", id, result.Err())
 	}
@@ -102,7 +103,7 @@ func (d *db) Update(ctx context.Context, user user.User) error {
 	}
 
 	if result.MatchedCount == 0 {
-		return fmt.Errorf("Not found")
+		return apperror.ErrNotFound
 	}
 	d.logger.Trace("matched %d documents and modified %d", result.MatchedCount, result.ModifiedCount)
 
@@ -121,7 +122,7 @@ func (d *db) Delete(ctx context.Context, id string) error {
 		return fmt.Errorf("failed to execute query. error: %v", err)
 	}
 	if result.DeletedCount == 0 {
-		return fmt.Errorf("ErrEntityNotFound")
+		return apperror.ErrNotFound
 	}
 	d.logger.Trace("deleted %d documents", result.DeletedCount)
 
