@@ -20,12 +20,12 @@ type Logger struct {
 	*logrus.Entry
 }
 
-func GetLogger() Logger {
-	return Logger{e}
+func GetLogger() *Logger {
+	return &Logger{e}
 }
 
-func (l *Logger) GetLoggerWithFiled(k string, v interface{}) Logger {
-	return Logger{l.WithField(k, v)}
+func (l *Logger) GetLoggerWithFiled(k string, v interface{}) *Logger {
+	return &Logger{l.WithField(k, v)}
 }
 
 func (hook *writerHook) Fire(entry *logrus.Entry) error {
@@ -50,7 +50,7 @@ func init() {
 	l.Formatter = &logrus.TextFormatter{
 		CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
 			fileName := path.Base(frame.File)
-			return fmt.Sprintf("%s()", function), fmt.Sprintf("%s:%d", fileName, frame.Line)
+			return fmt.Sprintf("%s()", frame.Function), fmt.Sprintf("%s:%d", fileName, frame.Line)
 		},
 		DisableColors: false,
 		FullTimestamp: true,
