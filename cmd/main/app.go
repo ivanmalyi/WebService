@@ -1,12 +1,9 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"github.com/ivanmalyi/WebService/internal/config"
 	"github.com/ivanmalyi/WebService/internal/user"
-	"github.com/ivanmalyi/WebService/internal/user/db"
-	"github.com/ivanmalyi/WebService/pkg/client/mongodb"
 	"github.com/ivanmalyi/WebService/pkg/logging"
 	"github.com/julienschmidt/httprouter"
 	"net"
@@ -24,14 +21,6 @@ func main() {
 	cfg := config.GetConfig()
 
 	logger.Info("Register user handler")
-
-	cfgMongo := cfg.MongoDB
-	mongoClient, err := mongodb.NewClient(context.Background(), cfgMongo.Host, cfgMongo.Port, cfgMongo.Username, cfgMongo.Password,
-		cfgMongo.Database, cfgMongo.AuthDB)
-	if err != nil {
-		panic(err)
-	}
-	strorage := db.NewStorage(mongoClient, cfgMongo.Collection, logger)
 
 	handler := user.NewHandler(logger)
 	handler.Register(router)
